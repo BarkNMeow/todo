@@ -44,10 +44,24 @@ nav button{
 }
 
 .tab-title{
+    display: flex;
+    justify-content: center;
+    height: 2.25rem;
     padding: .2rem 0;
     margin-bottom: .5rem;
     font-size: 1.5rem;
     font-weight: bold;
+}
+
+.tab-title button{
+    margin-left: auto;
+    padding: .1rem 1rem;
+    border-radius: 100rem;
+}
+
+.todo-list-scroll{
+    height: calc(100% - 2.25rem);
+    overflow-y: scroll;
 }
 
 .todo-list{
@@ -55,7 +69,6 @@ nav button{
     margin-bottom: .5rem;
     border-radius: .5rem;
     border: 1px solid black;
-
 }
 
 .todo-text{
@@ -70,4 +83,17 @@ nav button{
     background: rgb(230, 230, 230);
     color: rgb(140, 140, 140);
     border-radius: 100rem;
+}
+
+.todo-add{
+    padding: .5rem .75rem;
+    margin-bottom: .5rem;
+    border-radius: .5rem;
+    border: 1px solid black;
+}
+
+.todo-add input{
+    width: 100%;
+    height: 1.2rem;
+    border-bottom: 2px solid black;
 }
