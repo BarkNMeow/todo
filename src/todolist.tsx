@@ -1,7 +1,4 @@
-import { off } from "process";
 import * as React from "react";
-import { mockComponent } from "react-dom/test-utils";
-import { isReturnStatement } from "typescript";
 import './index.css';
 
 interface TodoInfo {
@@ -11,18 +8,33 @@ interface TodoInfo {
 
 interface TodolistProp {
     todo: Array<TodoInfo>
-    addTodo: any,
+    addTodo: (text: string, due: number) => void,
 }
 
 interface TodolistState {
     add: boolean,
 }
 
-class Todo extends React.Component <TodoInfo, {}>{
+class Todo extends React.Component <TodoInfo, {timeleft: number}>{
+    interval: NodeJS.Timer;
+
+    constructor(props: TodoInfo){
+        super(props);
+        this.state = {timeleft: this.getIntervalSeconds() }; 
+        this.interval = setInterval(() => {});
+    }
+
+    getIntervalSeconds(){
+        return Math.max(0, Math.round((this.props.due - Date.now()) / 1000));
+    }
+
+    componentDidMount(){
+        this.interval = setInterval(() => this.setState({timeleft: this.getIntervalSeconds() }), 1000);
+    }
+
     render() {
-        const curtime = Date.now();
         const due = this.props.due;
-        const interval = new Date((due - curtime) > 0 ? due - curtime : 0).valueOf() / 1000;
+        const interval = this.state.timeleft;
         
         const time_piece = [
             [Math.floor(interval / 86400), 'd'], 
@@ -38,7 +50,7 @@ class Todo extends React.Component <TodoInfo, {}>{
                 <div className="todo-text">{ this.props.text }</div>
                 {   
                     
-                    due === 0 ? (<div></div>) : (<div className="todo-time">{ timeleft_str } left</div>)
+                    due === 0 ? (<div></div>) : (<div className="todo-time">{ timeleft_str }</div>)
                 }
             </div>
         )

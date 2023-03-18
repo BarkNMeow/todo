@@ -55,7 +55,12 @@
 
 .todo-add-datetime-wrapper{
     display: flex;
+    margin-top: .3rem;
     gap: 1rem;
+}
+
+.todo-add-datetime-wrapper input{
+    flex-grow: 1;
 }
 
 .todo-add-btn-wrapper{

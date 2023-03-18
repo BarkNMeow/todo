@@ -3,6 +3,7 @@ html{
     --pading-horizontal: 1.25rem;
 
     --main: rgb(68, 75, 167);
+    --main-hover: rgb(47, 51, 121);
     --main-light: rgb(132, 136, 197);
     --white: rgb(255, 255, 255);
     --gray: rgb(128, 128, 128);
@@ -74,4 +75,10 @@ nav button{
     background: var(--main);
     color: var(--white);
     font-weight: 400;
+    transition-duration: .2s;
+}
+
+.tab-title button:hover{
+    background: var(--main-hover);
+
 }
