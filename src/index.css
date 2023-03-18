@@ -1,8 +1,21 @@
 html{
     --nav-height: 3rem;
+    --pading-horizontal: 1.25rem;
+
+    --main: rgb(68, 75, 167);
+    --main-light: rgb(132, 136, 197);
+    --white: rgb(255, 255, 255);
+    --gray: rgb(128, 128, 128);
+}
+
+body{
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: var(--regular);
+    -webkit-text-size-adjust: 100%;
 }
 
 *{
+    font-family: inherit;
     border: none;
     box-sizing: border-box;
     margin: 0;
@@ -13,8 +26,8 @@ main{
     width: 100%;
     height: calc(100vh - var(--nav-height));
     margin: 0 auto;
-    padding: .5rem 1rem;
-    background: rgb(255, 255, 255);
+    padding: .75rem 0;
+    background: var(--white);
 }
 
 #root{
@@ -45,55 +58,20 @@ nav button{
 
 .tab-title{
     display: flex;
-    justify-content: center;
-    height: 2.25rem;
-    padding: .2rem 0;
-    margin-bottom: .5rem;
+    flex-direction: row;
+    align-items: center;
+    height: 3rem;
+    padding: 0 var(--pading-horizontal);
+    margin-bottom: .75rem;
     font-size: 1.5rem;
     font-weight: bold;
 }
 
 .tab-title button{
     margin-left: auto;
-    padding: .1rem 1rem;
+    padding: .6rem 1rem;
     border-radius: 100rem;
-}
-
-.todo-list-scroll{
-    height: calc(100% - 2.25rem);
-    overflow-y: scroll;
-}
-
-.todo-list{
-    padding: .5rem .75rem;
-    margin-bottom: .5rem;
-    border-radius: .5rem;
-    border: 1px solid black;
-}
-
-.todo-text{
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.todo-time{
-    width: fit-content;
-    padding: .2rem .8rem;
-    margin-top: .5rem;
-    background: rgb(230, 230, 230);
-    color: rgb(140, 140, 140);
-    border-radius: 100rem;
-}
-
-.todo-add{
-    padding: .5rem .75rem;
-    margin-bottom: .5rem;
-    border-radius: .5rem;
-    border: 1px solid black;
-}
-
-.todo-add input{
-    width: 100%;
-    height: 1.2rem;
-    border-bottom: 2px solid black;
+    background: var(--main);
+    color: var(--white);
+    font-weight: 400;
 }
