@@ -49,7 +49,6 @@ class Todo extends React.Component <TodoInfo, {timeleft: number}>{
             <div className="todo-list">
                 <div className="todo-text">{ this.props.text }</div>
                 {   
-                    
                     due === 0 ? (<div></div>) : (<div className="todo-time">{ timeleft_str }</div>)
                 }
             </div>
@@ -69,20 +68,16 @@ class Todolist extends React.Component<TodolistProp, TodolistState>{
         e.preventDefault();
 
         const t = e.target;
+        const null_check = [t.text, t.date, t.time];
         let flag = false;
-        if(t.text.value === ''){
-            t.text.classList.add('error');
-            flag = true;
-        }
 
-        if(t.date.value === ''){
-            t.date.classList.add('error');
-            flag = true;
-        }
-
-        if(t.time.value === ''){
-            t.time.classList.add('error');
-            flag = true;
+        for(let i = 0; i < null_check.length; i++){
+            if(null_check[i].value === ''){
+                null_check[i].classList.add('error');
+                flag = true;
+            } else {
+                null_check[i].classList.remove('error');
+            }
         }
 
         const duetime = new Date(e.target.date.value + ' ' + e.target.time.value);
