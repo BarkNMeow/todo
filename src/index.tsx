@@ -1,19 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+class App extends React.Component {
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    constructor(props: {}){
+        super({})
+        this.state = {
+            tabindex: 0,
+        }
+    }
+
+    render() {
+        return (
+            <main>
+                <div className="tab-btn-holder">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                </div>
+            </main>
+        )
+    }
+}
+
+const root_dom = document.getElementById("root");
+if(root_dom){
+    const root = ReactDOM.createRoot(root_dom);
+    root.render(<App/>);
+}
