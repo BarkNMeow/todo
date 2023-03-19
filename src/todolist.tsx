@@ -1,4 +1,5 @@
 import * as React from "react";
+import { isThisTypeNode } from "typescript";
 import './index.css';
 
 interface TodoInfo {
@@ -39,6 +40,9 @@ class Todo extends React.Component <TodoInfo, {timeleft: number}>{
     constructor(props: TodoInfo){
         super(props);
         this.interval = setInterval(() => {});
+        this.state = {
+            timeleft: this.getIntervalSeconds(),
+        }
     }
 
     getIntervalSeconds(){
@@ -119,17 +123,24 @@ class TodoInput extends React.Component<TodoInputProp, TodoInputState>{
         console.log(this.state)
     }
 
-    checkNewTodo(){
-        const text = this.state.text;
-        const date = this.state.date;
-        const time = this.state.time;
+    checkNewTodo(me: TodoInput){
+        console.log(me)
+        const text = me.state.text;
+        const date = me.state.date;
+        const time = me.state.time;
 
         if(text === '' || date === '' || time === '') return;
 
-        let due = new Date(date + ' ' + time).getUTCMilliseconds();
+        let due = new Date(date + ' ' + time).valueOf();
         if(due < Date.now()) return;
 
         this.props.addTodo(text, due);
+        this.props.hideInput();
+        this.setState({
+            text: '',
+            date: '',
+            time: '',
+        });
     }
 
     render(){
@@ -146,7 +157,7 @@ class TodoInput extends React.Component<TodoInputProp, TodoInputState>{
                         <input type="time" name="time" value={time} onChange={e => this.handleInputChange(e, InputType.Time)}></input>
                     </div>
                     <div className="todo-add-btn-wrapper">
-                        <button id="btn-todo-confirm" onClick={this.checkNewTodo}>confirm</button>
+                        <button id="btn-todo-confirm" onClick={_ => this.checkNewTodo(this)}>confirm</button>
                         <button id="btn-todo-cancel" onClick={_ => this.props.hideInput()}>cancel</button>
                     </div>
                 </div>
