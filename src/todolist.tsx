@@ -6,13 +6,31 @@ interface TodoInfo {
     due: number,
 }
 
+interface TodoInputProp{
+    visible: boolean,
+    addTodo: (text: string, due: number) => void,
+    hideInput: () => void,
+}
+
+interface TodoInputState{
+    text: string,
+    date: string,
+    time: string,
+}
+
 interface TodolistProp {
     todo: Array<TodoInfo>
     addTodo: (text: string, due: number) => void,
 }
 
 interface TodolistState {
-    add: boolean,
+    inputVisible: boolean,
+}
+
+enum InputType{
+    Text,
+    Date,
+    Time,
 }
 
 class Todo extends React.Component <TodoInfo, {timeleft: number}>{
@@ -20,7 +38,6 @@ class Todo extends React.Component <TodoInfo, {timeleft: number}>{
 
     constructor(props: TodoInfo){
         super(props);
-        this.state = {timeleft: this.getIntervalSeconds() }; 
         this.interval = setInterval(() => {});
     }
 
@@ -36,23 +53,107 @@ class Todo extends React.Component <TodoInfo, {timeleft: number}>{
         const due = this.props.due;
         const interval = this.state.timeleft;
         
-        const time_piece = [
+        const time_piece: Array<[number, string]> = [
             [Math.floor(interval / 86400), 'd'], 
             [Math.floor((interval % 86400) / 3600), 'h'],
             [Math.floor((interval % 3600) / 60), 'm'],
             [Math.floor(interval % 60), 's']
         ];
-
-        const timeleft_str = time_piece.filter(val => val[0] !== 0).map(val => val[0].toString() + val[1]).join(' ');
+        
+        let numstart = false;
+        let timeleft_str = [];
+        for(let val of time_piece){
+            if(val[0] > 0 || numstart){
+                numstart = true;
+                timeleft_str.push(val[0].toString().padStart(2, "0") + val[1]);
+            }
+        }
+        
 
         return (
             <div className="todo-list">
                 <div className="todo-text">{ this.props.text }</div>
                 {   
-                    due === 0 ? (<div></div>) : (<div className="todo-time">{ timeleft_str }</div>)
+                    due === 0 ? (<div></div>) : (<div className="todo-time">{ timeleft_str.join(' ') }</div>)
                 }
             </div>
         )
+    }
+}
+
+class TodoInput extends React.Component<TodoInputProp, TodoInputState>{
+    constructor(props: TodoInputProp){
+        super(props);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.state = {
+            text: '',
+            date: '',
+            time: '',
+        };
+    }
+
+    handleInputChange(e: React.ChangeEvent<HTMLInputElement>, type: InputType){
+        let new_state = {
+            text: this.state.text,
+            date: this.state.date,
+            time: this.state.time,
+        };
+
+        switch(type){
+            case InputType.Text:
+                new_state.text = e.target.value
+                break;
+
+            case InputType.Date:
+                new_state.date = e.target.value;
+                break;
+
+            case InputType.Time:
+                new_state.time = e.target.value;
+                break;
+        }
+
+        console.log(new_state)
+
+        this.setState(new_state)
+        console.log(this.state)
+    }
+
+    checkNewTodo(){
+        const text = this.state.text;
+        const date = this.state.date;
+        const time = this.state.time;
+
+        if(text === '' || date === '' || time === '') return;
+
+        let due = new Date(date + ' ' + time).getUTCMilliseconds();
+        if(due < Date.now()) return;
+
+        this.props.addTodo(text, due);
+    }
+
+    render(){
+        const text = this.state.text;
+        const date = this.state.date;
+        const time = this.state.time;
+
+        if(this.props.visible){
+            return(
+                <div className="todo-add">
+                    <input placeholder="Add your TODO" name="text" value={text} onChange={e => this.handleInputChange(e, InputType.Text)}></input>
+                    <div className="todo-add-datetime-wrapper">
+                        <input type="date" name="date" value={date} onChange={e => this.handleInputChange(e, InputType.Date)}></input>
+                        <input type="time" name="time" value={time} onChange={e => this.handleInputChange(e, InputType.Time)}></input>
+                    </div>
+                    <div className="todo-add-btn-wrapper">
+                        <button id="btn-todo-confirm" onClick={this.checkNewTodo}>confirm</button>
+                        <button id="btn-todo-cancel" onClick={_ => this.props.hideInput()}>cancel</button>
+                    </div>
+                </div>
+            )
+        } else {
+            return (<div />)
+        }
     }
 }
 
@@ -60,39 +161,8 @@ class Todolist extends React.Component<TodolistProp, TodolistState>{
     constructor(props: TodolistProp){
         super(props);
         this.state = {
-            add: false,
+            inputVisible: false,
         };
-    }
-
-    updateTodo(e: any){
-        e.preventDefault();
-
-        const t = e.target;
-        const null_check = [t.text, t.date, t.time];
-        let flag = false;
-
-        for(let i = 0; i < null_check.length; i++){
-            if(null_check[i].value === ''){
-                null_check[i].classList.add('error');
-                flag = true;
-            } else {
-                null_check[i].classList.remove('error');
-            }
-        }
-
-        const duetime = new Date(e.target.date.value + ' ' + e.target.time.value);
-        const due = duetime.valueOf();
-
-        if(due <= Date.now()){
-            t.date.classList.add('error');
-            t.time.classList.add('error');
-            flag = true;
-        }
-
-        if(flag) return;
-            
-        this.props.addTodo(e.target.text.value, duetime.valueOf());
-        this.setState({add: false});
     }
 
     render() {
@@ -100,25 +170,11 @@ class Todolist extends React.Component<TodolistProp, TodolistState>{
             <div className="tab">
                 <div className="tab-title">
                     {this.props.todo.length} TODOs left! 
-                    <button onClick={_ => this.setState({add: true})}>Add</button>
+                    <button onClick={_ => this.setState({inputVisible: true})}>Add</button>
                 </div>
                 <div className="todo-list-scroll">
                     {this.props.todo.map((v, i) => (<Todo key={i} text={v.text} due={v.due} />))}
-                    {   
-                        this.state.add ? (
-                        <form className="todo-add" onSubmit={e => this.updateTodo(e)}>
-                            <input placeholder="Add your TODO" name="text"></input>
-                            <div className="todo-add-datetime-wrapper">
-                                <input type="date" name="date"></input>
-                                <input type="time" name="time"></input>
-                            </div>
-                            <div className="todo-add-btn-wrapper">
-                                <button id="btn-todo-confirm">confirm</button>
-                                <button id="btn-todo-cancel" onClick={e => {e.stopPropagation(); this.setState({add: false})}}>cancel</button>
-                            </div>
-                        </form>
-                        ) : (<div></div>)
-                    }
+                    <TodoInput visible={this.state.inputVisible} addTodo={this.props.addTodo} hideInput={() => this.setState({inputVisible: false})}/>
                 </div>
             </div>
         )
